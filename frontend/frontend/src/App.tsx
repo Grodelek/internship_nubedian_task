@@ -25,7 +25,8 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { typesApi, efficiencyRatingsApi, powerSuppliesApi, Type, EfficiencyRating, PowerSupply, TypeDTO, EfficiencyRatingDTO, PowerSupplyDTO } from './api';
-
+import PowerSupplyList from "./components/PowerSupplyList";
+import PowerSupplyForm from "./components/PowerSupplyForm";
 function App() {
   const [types, setTypes] = useState<Type[]>([]);
   const [efficiencyRatings, setEfficiencyRatings] = useState<EfficiencyRating[]>([]);
@@ -207,8 +208,16 @@ function App() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', backgroundColor: '#1a237e', py: 4 }}>
-      <Container maxWidth="lg">
+      <Box
+          sx={{
+            minHeight: '100vh',
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/background.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            py: 4,
+          }}
+      >
+        <Container maxWidth="lg">
         <Typography 
           variant="h3" 
           component="h1" 
@@ -395,240 +404,28 @@ function App() {
               }
             }}
           >
-            <CardContent>
-              <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: '#1a237e', mb: 3 }}>
-                {editingPowerSupplyId ? 'Edit Power Supply' : 'Power Supplies'}
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <TextField
-                  size="small"
-                  label="Brand"
-                  value={newPowerSupply.brand}
-                  onChange={(e) => setNewPowerSupply({ ...newPowerSupply, brand: e.target.value })}
-                />
-                <TextField
-                  size="small"
-                  label="Model"
-                  value={newPowerSupply.model}
-                  onChange={(e) => setNewPowerSupply({ ...newPowerSupply, model: e.target.value })}
-                />
-                <TextField
-                  size="small"
-                  type="number"
-                  label="Power (W)"
-                  value={newPowerSupply.power || ''}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setNewPowerSupply({ ...newPowerSupply, power: val === '' ? 0 : parseInt(val) || 0 });
-                  }}
-                  required
-                />
-                <TextField
-                  size="small"
-                  type="number"
-                  label="Number of PCI"
-                  value={newPowerSupply.numberOfPCI || ''}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setNewPowerSupply({ ...newPowerSupply, numberOfPCI: val === '' ? 0 : parseInt(val) || 0 });
-                  }}
-                />
-                <TextField
-                  size="small"
-                  type="number"
-                  label="Number of SATA"
-                  value={newPowerSupply.numberOfSATA || ''}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setNewPowerSupply({ ...newPowerSupply, numberOfSATA: val === '' ? 0 : parseInt(val) || 0 });
-                  }}
-                />
-                <TextField
-                  size="small"
-                  type="number"
-                  label="Number of M.2"
-                  value={newPowerSupply.numberOfM2 || ''}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setNewPowerSupply({ ...newPowerSupply, numberOfM2: val === '' ? 0 : parseInt(val) || 0 });
-                  }}
-                />
-                <TextField
-                  size="small"
-                  type="number"
-                  inputProps={{ step: '0.01' }}
-                  label="Price"
-                  value={newPowerSupply.price || ''}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setNewPowerSupply({ ...newPowerSupply, price: val === '' ? 0 : parseFloat(val) || 0 });
-                  }}
-                  required
-                />
-                <FormControl size="small" fullWidth>
-                  <InputLabel>Type</InputLabel>
-                  <Select
-                    value={newPowerSupply.typeId}
-                    label="Type"
-                    onChange={(e) => setNewPowerSupply({ ...newPowerSupply, typeId: e.target.value })}
-                  >
-                    {types.map((type) => (
-                      <MenuItem key={type.id} value={type.id}>
-                        {type.type}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl size="small" fullWidth>
-                  <InputLabel>Efficiency Rating</InputLabel>
-                  <Select
-                    value={newPowerSupply.efficiencyRatingId}
-                    label="Efficiency Rating"
-                    onChange={(e) => setNewPowerSupply({ ...newPowerSupply, efficiencyRatingId: e.target.value })}
-                  >
-                    {efficiencyRatings.map((rating) => (
-                      <MenuItem key={rating.id} value={rating.id}>
-                        {rating.efficiencyRating}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
-                  <Button
-                    variant="contained"
-                    startIcon={editingPowerSupplyId ? <EditIcon /> : <AddIcon />}
-                    onClick={editingPowerSupplyId ? handleUpdatePowerSupply : handleCreatePowerSupply}
-                    fullWidth
-                    disabled={
-                      !newPowerSupply.brand.trim() ||
-                      !newPowerSupply.model.trim() ||
-                      !newPowerSupply.typeId ||
-                      !newPowerSupply.efficiencyRatingId ||
-                      !newPowerSupply.power ||
-                      newPowerSupply.power <= 0 ||
-                      !newPowerSupply.price ||
-                      newPowerSupply.price <= 0
-                    }
-                    sx={{ 
-                      backgroundColor: '#1a237e',
-                      '&:hover': {
-                        backgroundColor: '#283593'
-                      }
-                    }}
-                  >
-                    {editingPowerSupplyId ? 'Update Power Supply' : 'Add Power Supply'}
-                  </Button>
-                  {editingPowerSupplyId && (
-                    <Button
-                      variant="outlined"
-                      startIcon={<CancelIcon />}
-                      onClick={handleCancelEdit}
-                      sx={{
-                        borderColor: '#1a237e',
-                        color: '#1a237e',
-                        '&:hover': {
-                          borderColor: '#283593',
-                          backgroundColor: 'rgba(26, 35, 126, 0.1)'
-                        }
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  )}
-                </Box>
-              </Box>
-            </CardContent>
+            <PowerSupplyForm
+                newPowerSupply={newPowerSupply}
+                types={types}
+                efficiencyRatings={efficiencyRatings}
+                editingPowerSupplyId={editingPowerSupplyId}
+                setNewPowerSupply={setNewPowerSupply}
+                handleCreatePowerSupply={handleCreatePowerSupply}
+                handleUpdatePowerSupply={handleUpdatePowerSupply}
+                handleCancelEdit={handleCancelEdit}
+            />
           </Card>
         </Grid>
-
-        <Grid item xs={12}>
-          <Card 
-            elevation={4}
-            sx={{ 
-              mt: 2,
-              backgroundColor: 'rgba(255, 255, 255, 0.98)'
-            }}
-          >
-            <CardContent>
-              <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: '#1a237e', mb: 3 }}>
-                All Power Supplies
-              </Typography>
-              <Grid container spacing={2}>
-                {powerSupplies.map((supply) => (
-                  <Grid item xs={12} sm={6} md={4} key={supply.id}>
-                    <Paper 
-                      elevation={3} 
-                      sx={{ 
-                        p: 2.5, 
-                        height: '100%',
-                        borderRadius: 2,
-                        transition: 'transform 0.2s, box-shadow 0.2s',
-                        '&:hover': {
-                          transform: 'translateY(-4px)',
-                          boxShadow: 6,
-                          backgroundColor: '#fafafa'
-                        }
-                      }}
-                    >
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', mb: 1.5 }}>
-                        <Typography variant="h6" component="div" sx={{ fontWeight: 600, color: '#1a237e' }}>
-                          {supply.brand} {supply.model}
-                        </Typography>
-                        <Box>
-                          <IconButton
-                            size="small"
-                            color="primary"
-                            onClick={() => handleEditPowerSupply(supply)}
-                            sx={{
-                              mr: 0.5,
-                              '&:hover': {
-                                backgroundColor: 'rgba(26, 35, 126, 0.1)'
-                              }
-                            }}
-                          >
-                            <EditIcon />
-                          </IconButton>
-                          <IconButton
-                            size="small"
-                            color="error"
-                            onClick={() => handleDeletePowerSupply(supply.id)}
-                            sx={{
-                              '&:hover': {
-                                backgroundColor: 'rgba(211, 47, 47, 0.1)'
-                              }
-                            }}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </Box>
-                      </Box>
-                      <Divider sx={{ my: 1.5 }} />
-                      <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 500 }}>
-                        <strong>Power:</strong> {supply.power}W
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 500 }}>
-                        <strong>Connectors:</strong> PCI: {supply.numberOfPCI} | SATA: {supply.numberOfSATA} | M.2: {supply.numberOfM2}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 500 }}>
-                        <strong>Price:</strong> €{supply.price}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 500 }}>
-                        <strong>Type:</strong> {supply.type?.type}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                        <strong>Efficiency:</strong> {supply.efficiencyRating?.efficiencyRating}
-                      </Typography>
-                    </Paper>
-                  </Grid>
-                ))}
-              </Grid>
-            </CardContent>
-          </Card>
+        <Grid item xs ={12}>
+        <PowerSupplyList
+          powerSupplies={powerSupplies}
+          handleEditPowerSupply={handleEditPowerSupply}
+          handleDeletePowerSupply={handleDeletePowerSupply}
+        />
         </Grid>
       </Grid>
       </Container>
     </Box>
   );
 }
-
 export default App;
