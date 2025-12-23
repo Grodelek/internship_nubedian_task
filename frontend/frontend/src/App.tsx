@@ -211,9 +211,7 @@ function App() {
       <Box
           sx={{
             minHeight: '100vh',
-            backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/background.png')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundColor: '#0d1b2a',
             py: 4,
           }}
       >
