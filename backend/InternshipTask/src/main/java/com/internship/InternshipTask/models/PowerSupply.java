@@ -1,7 +1,17 @@
 package com.internship.InternshipTask.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -28,10 +38,14 @@ public class PowerSupply {
     private Integer numberOfM2;
     @Column(nullable = false)
     private BigDecimal price;
+
     @ManyToOne
-    @JoinColumn(name = "type_id", nullable = false)
+    @JoinColumn(name = "type_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Type type;
+
     @ManyToOne
-    @JoinColumn(name = "efficiency_rating_id", nullable = false)
+    @JoinColumn(name = "efficiency_rating_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private EfficiencyRating efficiencyRating;
 }

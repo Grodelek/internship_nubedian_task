@@ -23,8 +23,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
-import CancelIcon from '@mui/icons-material/Cancel';
-import { typesApi, efficiencyRatingsApi, powerSuppliesApi, Type, EfficiencyRating, PowerSupply, TypeDTO, EfficiencyRatingDTO, PowerSupplyDTO } from './api';
+import { typesApi, efficiencyRatingsApi, powerSuppliesApi, Type, EfficiencyRating, PowerSupply, PowerSupplyDTO } from './api';
 import PowerSupplyList from "./components/PowerSupplyList";
 import PowerSupplyForm from "./components/PowerSupplyForm";
 function App() {
@@ -76,15 +75,6 @@ function App() {
     }
   };
 
-  const handleDeleteType = async (id: string) => {
-    try {
-      await typesApi.delete(id);
-      loadData();
-    } catch (error) {
-      console.error('Failed to delete type:', error);
-    }
-  };
-
   const handleCreateEfficiencyRating = async () => {
     try {
       await efficiencyRatingsApi.create({ efficiencyRating: newEfficiencyRating });
@@ -95,12 +85,31 @@ function App() {
     }
   };
 
+  const handleDeleteType = async (id: string) => {
+    const confirmDelete = window.confirm(
+      'Deleting this type will also delete all power supplies that use it. Continue?'
+    );
+    if (!confirmDelete) return;
+    try {
+      await typesApi.delete(id);
+      loadData();
+    } catch (error) {
+      console.error('Failed to delete type:', error);
+      alert('Failed to delete type. It may be linked to power supplies.');
+    }
+  };
+
   const handleDeleteEfficiencyRating = async (id: string) => {
+    const confirmDelete = window.confirm(
+      'Deleting this efficiency rating will also delete all power supplies that use it. Continue?'
+    );
+    if (!confirmDelete) return;
     try {
       await efficiencyRatingsApi.delete(id);
       loadData();
     } catch (error) {
       console.error('Failed to delete efficiency rating:', error);
+      alert('Failed to delete efficiency rating. It may be linked to power supplies.');
     }
   };
 
@@ -294,16 +303,16 @@ function App() {
                       primary={type.type}
                       primaryTypographyProps={{ fontWeight: 500 }}
                     />
-                    <ListItemSecondaryAction>
-                      <IconButton
-                        edge="end"
-                        color="error"
-                        onClick={() => handleDeleteType(type.id)}
-                        size="small"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </ListItemSecondaryAction>
+                      <ListItemSecondaryAction>
+                        <IconButton
+                          edge="end"
+                          color="error"
+                          onClick={() => handleDeleteType(type.id)}
+                          size="small"
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </ListItemSecondaryAction>
                   </ListItem>
                 ))}
               </List>
@@ -373,16 +382,16 @@ function App() {
                       primary={rating.efficiencyRating}
                       primaryTypographyProps={{ fontWeight: 500 }}
                     />
-                    <ListItemSecondaryAction>
-                      <IconButton
-                        edge="end"
-                        color="error"
-                        onClick={() => handleDeleteEfficiencyRating(rating.id)}
-                        size="small"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </ListItemSecondaryAction>
+                      <ListItemSecondaryAction>
+                        <IconButton
+                          edge="end"
+                          color="error"
+                          onClick={() => handleDeleteEfficiencyRating(rating.id)}
+                          size="small"
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </ListItemSecondaryAction>
                   </ListItem>
                 ))}
               </List>
